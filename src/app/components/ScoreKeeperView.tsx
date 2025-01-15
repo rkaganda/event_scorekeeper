@@ -93,18 +93,37 @@ const ScoreKeeperView = ({ scoreKeeperId, removeScoreKeeper }: ScoreKeeperViewPr
         }));
     };
 
-    const getScoreKeeperDataLink = () => {
-        const currentUrl = window.location.href.split('?')[0]; 
-        const shareUrl = `${currentUrl}api/scorekeeper?id=${scoreKeeperId}`; 
-        navigator.clipboard.writeText(shareUrl)
-            .then(() => {
-                alert('Link copied to clipboard!');
-            })
-            .catch(() => {
-                alert('Failed to copy the link.');
-            });
+    const fallbackCopyTextToClipboard = (text: string) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand("copy");
+            alert('Link copied to clipboard!');
+        } catch (err) {
+            alert('Failed to copy the link.');
+        }
+        document.body.removeChild(textArea);
     };
-
+    
+    const getScoreKeeperDataLink = () => {
+        const currentUrl = window.location.href.split('?')[0];
+        const shareUrl = `${currentUrl}api/scorekeeper?id=${scoreKeeperId}`;
+        if (navigator?.clipboard?.writeText) {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    alert('Link copied to clipboard!');
+                })
+                .catch(() => {
+                    alert('Failed to copy the link.');
+                });
+        } else {
+            fallbackCopyTextToClipboard(shareUrl);
+        }
+    };
+    
     return (
         <div className="flex flex-col items-center p-4 m-2 rounded-md duration-200 bg-stone-600">
             <div className="grid grid-cols-3 items-center mb-4 w-full">

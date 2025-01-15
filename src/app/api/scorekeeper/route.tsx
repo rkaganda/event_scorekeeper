@@ -4,11 +4,15 @@ import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
 
-console.log(process.env.DATABASE_URL);
-console.log(prisma.DATABASE_URL);
-
 function generateHash(timestamp: string): string {
     return createHash('sha256').update(timestamp).digest('hex').slice(0, 16); // 16-character hash
+}
+
+function addCorsHeaders(response: NextResponse): NextResponse {
+    response.headers.set('Access-Control-Allow-Origin', '*'); // Allow all origins
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
 }
 
 export async function GET(request: NextRequest) {
@@ -46,7 +50,7 @@ export async function GET(request: NextRequest) {
                 bracketStage: scorekeeper.bracket_stage || '',
             };
 
-            return NextResponse.json(result, { status: 200 });
+            return addCorsHeaders(NextResponse.json(result, { status: 200 }));
         } else {
             const scorekeepers = await prisma.match_scores.findMany({
                 select: { id: true, name: true },
@@ -56,7 +60,7 @@ export async function GET(request: NextRequest) {
         }
     } catch (error) {
         console.error('API error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return addCorsHeaders(NextResponse.json({ error: 'Internal Server Error' }, { status: 500 }));
     }
 }
 
