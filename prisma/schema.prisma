@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model match_scores {
+  player_one_name  String? @db.VarChar
+  player_two_name  String? @db.VarChar
+  player_one_tag   String? @db.VarChar
+  player_two_tag   String? @db.VarChar
+  player_one_score Int?
+  player_two_score Int?
+  bracket_stage    String? @db.VarChar
+  stage_first_to   Int?
+  id               String  @id(map: "match_scores_pk") @db.VarChar
+  name             String? @db.VarChar
+}
+
+model startgg_gamertags {
+  gamertag   String @db.VarChar
+  startgg_id Int
+
+  @@id([gamertag, startgg_id], map: "startgg_gamertags_pk")
+}
