@@ -103,6 +103,7 @@ const ScoreKeeperView = ({ scoreKeeperId, removeScoreKeeper }: ScoreKeeperViewPr
             document.execCommand("copy");
             alert('Link copied to clipboard!');
         } catch (err) {
+            console.log(err);
             alert('Failed to copy the link.');
         }
         document.body.removeChild(textArea);
